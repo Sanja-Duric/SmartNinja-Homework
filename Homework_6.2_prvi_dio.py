@@ -5,28 +5,36 @@ import datetime
 
 
 class Result():
-    def __init__(self, name, score, date):
+    def __init__(self, name, attempts, date):
         self.name = name
-        self.score = score
+        self.attempts = attempts
         self.date = date
 
 secret = random.randint(1, 20)
-score = 0
+attempts = 0
 name = input("Unesi ime igrača: ")
+
+with open("score_list.json", "r") as score_file:
+    score_list = json.loads(score_file.read())
+
+    for score_dict in score_list:
+        print(str(score_dict["name"]) + " :" + str((score_dict["attempts"])) + " attempts, date: " + score_dict.get("date"))
 
 while True:
     guess = int(input("Pogodi tajni broj: "))
-    score += 1
+    attempts += 1
 
     if guess == secret:
 
-        result = Result(name=name, score=score, date=str(datetime.datetime.now()))
+        result = Result(name=name, attempts=attempts, date=str(datetime.datetime.now()))
 
-        with open("result.json", "w") as result_file:
-            result_file.write(str(result.__dict__))
+        score_list.append(result.__dict__)
+
+        with open("score_list.json", "w") as score_file:
+            score_file.write(json.dumps(score_list))
 
         print("Bravo! Tajni broj je " + str(secret))
-        print("Iskorišteno pogodaka: " + str(score))
+        print("Iskorišteno pogodaka: " + str(attempts))
         break
     elif guess < secret:
         print("Pokušaj s većim brojem!")
